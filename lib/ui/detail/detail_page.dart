@@ -16,6 +16,8 @@ class RestaurantDetailPage extends StatefulWidget {
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   late Future<DetailRestaurant> _restaurant;
+  final _reviewController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -44,7 +46,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     flexibleSpace: LayoutBuilder(
                       builder:
                           (BuildContext context, BoxConstraints constraints) {
-                        double percentSpace =
+                            double percentSpace =
                             ((constraints.maxHeight - kToolbarHeight) /
                                 (200 - kToolbarHeight));
                         return FlexibleSpaceBar(
@@ -140,8 +142,39 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                                   },
                                 ),
                               ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Customer Reviews',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: () => _showAddReviewDialog(context),
+                                child: Text('Add Review', style: TextStyle(color: onPrimaryColor),),
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                height: 200, // adjust the height as needed
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(color: onPrimaryColor),
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(),
+                                  itemCount: restaurant.customerReviews.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Text(restaurant.customerReviews[index].name),
+                                      subtitle: Text(restaurant.customerReviews[index].review),
+                                    );
+                                  },
+                                ),
+                              ),
                             ],
                           ),
+
                         ),
                       ],
                     ),
@@ -161,119 +194,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         }
       },
     );
-
-    // if (widget.restaurant.id.isEmpty) {
-    //   return const Scaffold(
-    //     body: Center(
-    //       child: Text('Restaurant data is not available'),
-    //     ),
-    //   );
-    // } else{
-    // return Scaffold(
-    //   body: CustomScrollView(
-    //     slivers: <Widget>[
-    //       SliverAppBar(
-    //         expandedHeight: 200,
-    //         pinned: true,
-    //         flexibleSpace: LayoutBuilder(
-    //           builder: (BuildContext context, BoxConstraints constraints) {
-    //             double percentSpace =
-    //                 ((constraints.maxHeight - kToolbarHeight) /
-    //                     (200 - kToolbarHeight));
-    //             return FlexibleSpaceBar(
-    //               centerTitle: percentSpace > 0.5,
-    //               titlePadding: EdgeInsets.symmetric(
-    //                   horizontal: percentSpace > 0.5 ? 0 : 72, vertical: 16),
-    //               background: Hero(
-    //                 tag: widget.restaurant.pictureId,
-    //                 child: Image.network(
-    //                   widget.restaurant.pictureId,
-    //                   fit: BoxFit.cover,
-    //                 ),
-    //               ),
-    //               title: Text(
-    //                 widget.restaurant.name,
-    //                 style: TextStyle(
-    //                   color: percentSpace > 0.5 ? primaryColor : onPrimaryColor,
-    //                 ),
-    //               ),
-    //             );
-    //           },
-    //         ),
-    //       ),
-    //       SliverList(
-    //         delegate: SliverChildListDelegate(
-    //           [
-    //             Padding(
-    //               padding: const EdgeInsets.all(16.0),
-    //               child: Column(
-    //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //                 children: [
-    //                   Row(
-    //                     children: [
-    //                       const Icon(Icons.location_on),
-    //                       const SizedBox(width: 5),
-    //                       Text(widget.restaurant.city),
-    //                     ],
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   Row(
-    //                     children: [
-    //                       const Icon(Icons.star, color: Colors.yellow),
-    //                       const SizedBox(width: 5),
-    //                       Text(widget.restaurant.rating.toString()),
-    //                     ],
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   Text(widget.restaurant.description, textAlign: TextAlign.justify,),
-    //                   const SizedBox(height: 10),
-    //                   Text(
-    //                     'Menus',
-    //                     style: Theme.of(context).textTheme.titleLarge,
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   Text(
-    //                     'Foods',
-    //                     style: Theme.of(context).textTheme.titleMedium,
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   SizedBox(
-    //                     height: 200,
-    //                     child: ListView.builder(
-    //                       scrollDirection: Axis.horizontal,
-    //                       itemCount: widget.restaurant.menus.foods.length,
-    //                       itemBuilder: (context, index) {
-    //                         return _buildFoodItem(
-    //                             context, widget.restaurant.menus.foods[index]);
-    //                       },
-    //                     ),
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   Text(
-    //                     'Drinks',
-    //                     style: Theme.of(context).textTheme.titleMedium,
-    //                   ),
-    //                   const SizedBox(height: 10),
-    //                   SizedBox(
-    //                     height: 200,
-    //                     child: ListView.builder(
-    //                       scrollDirection: Axis.horizontal,
-    //                       itemCount: widget.restaurant.menus.drinks.length,
-    //                       itemBuilder: (context, index) {
-    //                         return _buildDrinkItem(
-    //                             context, widget.restaurant.menus.drinks[index]);
-    //                       },
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );}
   }
 
   Widget _buildFoodItem(BuildContext context, Category food) {
@@ -326,5 +246,61 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ),
       ),
     );
+  }
+
+  void _showAddReviewDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add Review', // size 20
+              style: Theme.of(context).textTheme.titleMedium),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(hintText: 'Your Name'),
+                ),
+                TextField(
+                  controller: _reviewController,
+                  decoration: InputDecoration(hintText: 'Your Review'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel', style: TextStyle(color: onPrimaryColor)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Submit', style: TextStyle(color: onPrimaryColor)),
+              onPressed: () {
+                _submitReview();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _submitReview() async {
+    await ApiService().reviewRestaurant(
+      widget.restaurantId,
+      _nameController.text,
+      _reviewController.text,
+    );
+    _refreshRestaurant();
+  }
+
+  void _refreshRestaurant() {
+    setState(() {
+      _restaurant = ApiService().detailRestaurant(widget.restaurantId);
+    });
   }
 }
