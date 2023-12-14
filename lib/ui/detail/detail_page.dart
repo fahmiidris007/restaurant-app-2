@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/model/detail_restaurant.dart';
+import 'package:restaurant_app/provider/detail_restaurant_provider.dart';
 import 'package:restaurant_app/theme/styles.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -15,184 +17,191 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  late Future<DetailRestaurant> _restaurant;
   final _reviewController = TextEditingController();
   final _nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _restaurant = ApiService().detailRestaurant(widget.restaurantId);
+    ApiService().detailRestaurant(widget.restaurantId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _restaurant,
-      builder: (context, AsyncSnapshot<DetailRestaurant> snapshot) {
-        var state = snapshot.connectionState;
-        if (state != ConnectionState.done) {
+    return ChangeNotifierProvider<DetailRestaurantProvider>(
+      create: (_) => DetailRestaurantProvider(
+        apiService: ApiService(),
+        id: widget.restaurantId,
+      ),
+      child: Consumer<DetailRestaurantProvider>(builder: (context, state, _) {
+        if (state.state == ResultState.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else {
-          if (snapshot.hasData) {
-            var restaurant = snapshot.data!.restaurant;
-            const urlImage = 'https://restaurant-api.dicoding.dev/images/medium/';
-            return Scaffold(
-              body: CustomScrollView(
-                slivers: <Widget>[
-                  SliverAppBar(
-                    expandedHeight: 200,
-                    pinned: true,
-                    flexibleSpace: LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                            double percentSpace =
-                            ((constraints.maxHeight - kToolbarHeight) /
-                                (200 - kToolbarHeight));
-                        return FlexibleSpaceBar(
-                          centerTitle: percentSpace > 0.5,
-                          titlePadding: EdgeInsets.symmetric(
-                              horizontal: percentSpace > 0.5 ? 0 : 72,
-                              vertical: 16),
-                          background: Hero(
-                            tag: restaurant.pictureId,
-                            child: Image.network(
-                              urlImage + restaurant.pictureId,
-                              fit: BoxFit.cover,
-                            ),
+        } else if (state.state == ResultState.hasData) {
+          var restaurant = state.result.restaurant;
+          const urlImage = 'https://restaurant-api.dicoding.dev/images/medium/';
+          return Scaffold(
+            body: CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  expandedHeight: 200,
+                  pinned: true,
+                  flexibleSpace: LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      double percentSpace =
+                          ((constraints.maxHeight - kToolbarHeight) /
+                              (200 - kToolbarHeight));
+                      return FlexibleSpaceBar(
+                        centerTitle: percentSpace > 0.5,
+                        titlePadding: EdgeInsets.symmetric(
+                            horizontal: percentSpace > 0.5 ? 0 : 72,
+                            vertical: 16),
+                        background: Hero(
+                          tag: restaurant.pictureId,
+                          child: Image.network(
+                            urlImage + restaurant.pictureId,
+                            fit: BoxFit.cover,
                           ),
-                          title: Text(
-                            restaurant.name,
-                            style: TextStyle(
-                              color: percentSpace > 0.5
-                                  ? primaryColor
-                                  : onPrimaryColor,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.location_on),
-                                  const SizedBox(width: 5),
-                                  Text(restaurant.city),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const Icon(Icons.star, color: Colors.yellow),
-                                  const SizedBox(width: 5),
-                                  Text(restaurant.rating.toString()),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                restaurant.description,
-                                textAlign: TextAlign.justify,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Menus',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Foods',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 10),
-                              SizedBox(
-                                height: 200,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      restaurant.menus.foods.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildFoodItem(context,
-                                        restaurant.menus.foods[index]);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Drinks',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 10),
-                              SizedBox(
-                                height: 200,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      restaurant.menus.drinks.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildDrinkItem(context,
-                                        restaurant.menus.drinks[index]);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Customer Reviews',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () => _showAddReviewDialog(context),
-                                child: Text('Add Review', style: TextStyle(color: onPrimaryColor),),
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                height: 200, // adjust the height as needed
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(color: onPrimaryColor),
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  itemCount: restaurant.customerReviews.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(restaurant.customerReviews[index].name),
-                                      subtitle: Text(restaurant.customerReviews[index].review),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-
                         ),
-                      ],
-                    ),
+                        title: Text(
+                          restaurant.name,
+                          style: TextStyle(
+                            color: percentSpace > 0.5
+                                ? primaryColor
+                                : onPrimaryColor,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Material(
-                child: Text(snapshot.error.toString()),
-              ),
-            );
-          } else {
-            return const Material(child: Text(''));
-          }
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on),
+                                const SizedBox(width: 5),
+                                Text(restaurant.city),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(Icons.star, color: Colors.yellow),
+                                const SizedBox(width: 5),
+                                Text(restaurant.rating.toString()),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              restaurant.description,
+                              textAlign: TextAlign.justify,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Menus',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Foods',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              height: 200,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: restaurant.menus.foods.length,
+                                itemBuilder: (context, index) {
+                                  return _buildFoodItem(
+                                      context, restaurant.menus.foods[index]);
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Drinks',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              height: 200,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: restaurant.menus.drinks.length,
+                                itemBuilder: (context, index) {
+                                  return _buildDrinkItem(
+                                      context, restaurant.menus.drinks[index]);
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Customer Reviews',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () => _showAddReviewDialog(context),
+                              child: Text(
+                                'Add Review',
+                                style: TextStyle(color: onPrimaryColor),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              height: 200, // adjust the height as needed
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: onPrimaryColor),
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                itemCount: restaurant.customerReviews.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(
+                                        restaurant.customerReviews[index].name),
+                                    subtitle: Text(restaurant
+                                        .customerReviews[index].review),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else if (state.state == ResultState.noData) {
+          return Center(
+            child: Material(
+              child: Text(state.message),
+            ),
+          );
+        } else if (state.state == ResultState.error) {
+          return Center(
+            child: Material(
+              child: Text(state.message),
+            ),
+          );
+        } else {
+          return const Material(child: Text(''));
         }
-      },
+      }),
     );
   }
 
@@ -300,7 +309,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   void _refreshRestaurant() {
     setState(() {
-      _restaurant = ApiService().detailRestaurant(widget.restaurantId);
+      ApiService().detailRestaurant(widget.restaurantId);
     });
   }
 }
