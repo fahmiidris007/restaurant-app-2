@@ -8,7 +8,7 @@ class ListRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
 
   ListRestaurantProvider({required this.apiService}) {
-    _fetchAllRestaurant();
+    fetchAllRestaurant();
   }
 
   late ListRestaurant _listRestaurant;
@@ -21,7 +21,7 @@ class ListRestaurantProvider extends ChangeNotifier {
 
   ResultState get state => _state;
 
-  Future<dynamic> _fetchAllRestaurant() async {
+  Future<dynamic> fetchAllRestaurant() async {
     try {
       _state = ResultState.loading;
       notifyListeners();
@@ -29,7 +29,7 @@ class ListRestaurantProvider extends ChangeNotifier {
       if (restaurant.restaurants.isEmpty) {
         _state = ResultState.noData;
         notifyListeners();
-        return _message = 'Empty Data';
+        return _message = 'No Data Restaurant Found';
       } else {
         _state = ResultState.hasData;
         notifyListeners();
@@ -38,7 +38,7 @@ class ListRestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message = 'Error --> $e';
+      return _message = 'Check Your Internet Connection !';
     }
   }
 }

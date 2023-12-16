@@ -8,7 +8,7 @@ class DetailRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
   final String id;
 
-  DetailRestaurantProvider({required this.apiService, this.id= ''}){
+  DetailRestaurantProvider({required this.apiService, this.id = ''}) {
     fetchDetailRestaurant(id);
   }
 
@@ -24,17 +24,21 @@ class DetailRestaurantProvider extends ChangeNotifier {
 
   Future<dynamic> fetchDetailRestaurant(String id) async {
     try {
+      if (id.isEmpty) {
+        _state = ResultState.noData;
+        notifyListeners();
+        return _message = 'No Data Restaurant Found';
+      }
       _state = ResultState.loading;
       notifyListeners();
       final restaurant = await apiService.detailRestaurant(id);
       _state = ResultState.hasData;
       notifyListeners();
       return _detailRestaurant = restaurant;
-        } catch (e) {
+    } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message = 'Error --> $e';
+      return _message = 'Check Your Internet Connection !';
     }
   }
-
 }

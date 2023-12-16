@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../home/list_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,12 +13,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const RestaurantListPage()),
-      );
-    });
+    Future.delayed(
+      const Duration(seconds: 3),
+      () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RestaurantListPage(),
+          ),
+        );
+      },
+    );
   }
 
   @override

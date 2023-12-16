@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/model/search_restaurant.dart';
@@ -9,7 +8,7 @@ class SearchRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
   String query;
 
-  SearchRestaurantProvider({required this.apiService, this.query = ''}){
+  SearchRestaurantProvider({required this.apiService, this.query = ''}) {
     _state = ResultState.noData;
     search('');
   }
@@ -39,7 +38,9 @@ class SearchRestaurantProvider extends ChangeNotifier {
 
       _state = ResultState.loading;
       notifyListeners();
-      final restaurant = await apiService.searchRestaurant(query.toLowerCase());
+      final restaurant = await apiService.searchRestaurant(
+        query.toLowerCase(),
+      );
       if (restaurant.restaurants.isEmpty) {
         _state = ResultState.noData;
         _searchRestaurant = SearchRestaurant(restaurants: []);
@@ -52,9 +53,9 @@ class SearchRestaurantProvider extends ChangeNotifier {
       }
     } catch (e) {
       _state = ResultState.error;
-      _searchRestaurant = SearchRestaurant(restaurants: []); // Clear previous data
+      _searchRestaurant = SearchRestaurant(restaurants: []);
       notifyListeners();
-      return _message = 'Error :( Please Try Again';
+      return _message = 'Check Your Internet Connection !';
     }
   }
 }

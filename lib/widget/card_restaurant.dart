@@ -3,8 +3,6 @@ import 'package:restaurant_app/data/model/restaurant.dart';
 import 'package:restaurant_app/theme/styles.dart';
 import 'package:restaurant_app/ui/detail/detail_page.dart';
 
-import '../data/model/list_restaurant.dart';
-
 class CardRestaurant extends StatelessWidget {
   final Restaurant restaurant;
   static const urlImage = 'https://restaurant-api.dicoding.dev/images/small/';
@@ -17,7 +15,7 @@ class CardRestaurant extends StatelessWidget {
       color: primaryColor,
       child: ListTile(
         contentPadding:
-        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         leading: Hero(
           tag: restaurant.pictureId,
           child: Image.network(
@@ -44,7 +42,8 @@ class CardRestaurant extends StatelessWidget {
                 const SizedBox(width: 5),
                 Text(restaurant.rating.toString()),
               ],
-            )],
+            )
+          ],
         ),
         onTap: () => Navigator.pushNamed(
           context,

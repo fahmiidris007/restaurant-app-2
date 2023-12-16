@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:restaurant_app/data/model/restaurant.dart';
 
-ListRestaurant listRestaurantFromJson(String str) => ListRestaurant.fromJson(json.decode(str));
+ListRestaurant listRestaurantFromJson(String str) =>
+    ListRestaurant.fromJson(json.decode(str));
 
 String listRestaurantToJson(ListRestaurant data) => json.encode(data.toJson());
 
@@ -20,18 +21,17 @@ class ListRestaurant {
   });
 
   factory ListRestaurant.fromJson(Map<String, dynamic> json) => ListRestaurant(
-    error: json["error"],
-    message: json["message"],
-    count: json["count"],
-    restaurants: List<Restaurant>.from(json["restaurants"].map((x) => Restaurant.fromJson(x))),
-  );
+        error: json["error"],
+        message: json["message"],
+        count: json["count"],
+        restaurants: List<Restaurant>.from(
+            json["restaurants"].map((x) => Restaurant.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "error": error,
-    "message": message,
-    "count": count,
-    "restaurants": List<dynamic>.from(restaurants.map((x) => x.toJson())),
-  };
+        "error": error,
+        "message": message,
+        "count": count,
+        "restaurants": List<dynamic>.from(restaurants.map((x) => x.toJson())),
+      };
 }
-
-

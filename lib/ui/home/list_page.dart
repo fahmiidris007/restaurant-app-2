@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_app/data/api/api_service.dart';
-import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/provider/list_restaurant_provider.dart';
 import 'package:restaurant_app/widget/card_restaurant.dart';
 
@@ -15,11 +13,12 @@ class RestaurantListPage extends StatefulWidget {
 }
 
 class _RestaurantListPageState extends State<RestaurantListPage> {
-
   @override
   void initState() {
     super.initState();
-    ApiService().listRestaurant();
+    Future.microtask(() =>
+        Provider.of<ListRestaurantProvider>(context, listen: false)
+            .fetchAllRestaurant());
   }
 
   @override
@@ -66,7 +65,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                 ),
               );
             } else {
-              return const Center(child: Text(''));
+              return const Center(child: Text('Please try again later'));
             }
           },
         ),

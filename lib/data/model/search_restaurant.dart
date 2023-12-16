@@ -6,9 +6,11 @@ import 'dart:convert';
 
 import 'package:restaurant_app/data/model/restaurant.dart';
 
-SearchRestaurant searchRestaurantFromJson(String str) => SearchRestaurant.fromJson(json.decode(str));
+SearchRestaurant searchRestaurantFromJson(String str) =>
+    SearchRestaurant.fromJson(json.decode(str));
 
-String searchRestaurantToJson(SearchRestaurant data) => json.encode(data.toJson());
+String searchRestaurantToJson(SearchRestaurant data) =>
+    json.encode(data.toJson());
 
 class SearchRestaurant {
   bool error;
@@ -17,19 +19,21 @@ class SearchRestaurant {
 
   SearchRestaurant({
     this.error = false,
-    this.founded= 0,
-   this.restaurants= const [],
+    this.founded = 0,
+    this.restaurants = const [],
   });
 
-  factory SearchRestaurant.fromJson(Map<String, dynamic> json) => SearchRestaurant(
-    error: json["error"],
-    founded: json["founded"],
-    restaurants: List<Restaurant>.from(json["restaurants"].map((x) => Restaurant.fromJson(x))),
-  );
+  factory SearchRestaurant.fromJson(Map<String, dynamic> json) =>
+      SearchRestaurant(
+        error: json["error"],
+        founded: json["founded"],
+        restaurants: List<Restaurant>.from(
+            json["restaurants"].map((x) => Restaurant.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "error": error,
-    "founded": founded,
-    "restaurants": List<dynamic>.from(restaurants.map((x) => x.toJson())),
-  };
+        "error": error,
+        "founded": founded,
+        "restaurants": List<dynamic>.from(restaurants.map((x) => x.toJson())),
+      };
 }

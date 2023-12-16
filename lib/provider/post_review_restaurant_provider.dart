@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/model/review_restaurant.dart';
 
-enum ResultState { loading, noData, hasData, error }
+enum ResultState { loading, hasData, error }
 
 class PostReviewRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
@@ -32,7 +32,7 @@ class PostReviewRestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message = 'Error --> $e';
+      return _message = 'Check Your Internet Connection !';
     }
   }
 }

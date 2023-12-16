@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/provider/detail_restaurant_provider.dart';
 import 'package:restaurant_app/provider/post_review_restaurant_provider.dart';
-import 'package:restaurant_app/ui/detail/detail_page.dart';
+import 'package:restaurant_app/theme/styles.dart';
 
 class PostReviewPage extends StatefulWidget {
   static const routeName = '/post_review_page';
@@ -59,7 +59,13 @@ class _PostReviewPageState extends State<PostReviewPage> {
                     controller: _nameController,
                     decoration: const InputDecoration(
                       labelText: 'Name',
+                      floatingLabelStyle: TextStyle(color: secondaryColor),
                       hintText: 'Your name',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: secondaryColor,
+                        ),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -68,11 +74,18 @@ class _PostReviewPageState extends State<PostReviewPage> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 16.0),
                   TextFormField(
                     controller: _reviewController,
                     decoration: const InputDecoration(
                       labelText: 'Review',
+                      floatingLabelStyle: TextStyle(color: secondaryColor),
                       hintText: 'Your review',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: secondaryColor,
+                        ),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -85,14 +98,23 @@ class _PostReviewPageState extends State<PostReviewPage> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        state.postReviewRestaurant(
+                        state
+                            .postReviewRestaurant(
                           _nameController.text,
                           _reviewController.text,
-                        ).then((_) {
-                          Navigator.pop(context, true);
-                        });
+                        )
+                            .then(
+                          (_) {
+                            Navigator.pop(context, true);
+                          },
+                        );
                       }
                     },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
                     child: const Text('Submit'),
                   ),
                 ],

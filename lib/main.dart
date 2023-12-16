@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/provider/list_restaurant_provider.dart';
-import 'package:restaurant_app/provider/post_review_restaurant_provider.dart';
 import 'package:restaurant_app/provider/search_restaurant_provider.dart';
 import 'package:restaurant_app/theme/styles.dart';
 import 'package:restaurant_app/ui/detail/detail_page.dart';
@@ -27,12 +26,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => ListRestaurantProvider(apiService: ApiService()),
+          create: (_) => ListRestaurantProvider(
+            apiService: ApiService(),
+          ),
         ),
         ChangeNotifierProvider(
-            create: (_) => SearchRestaurantProvider(apiService: ApiService())),
+          create: (_) => SearchRestaurantProvider(
+            apiService: ApiService(),
+          ),
+        ),
         ChangeNotifierProvider(
-          create: (_) => DetailRestaurantProvider(apiService: ApiService()),
+          create: (_) => DetailRestaurantProvider(
+            apiService: ApiService(),
+          ),
         ),
       ],
       child: MaterialApp(
