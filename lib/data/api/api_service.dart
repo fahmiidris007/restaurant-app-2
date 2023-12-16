@@ -35,7 +35,7 @@ class ApiService{
     }
   }
 
-  Future<ReviewRestaurant> reviewRestaurant(String id, String name, String review) async {
+  Future<ReviewRestaurant> postReviewRestaurant(String id, String name, String review) async {
     final response = await http.post(
       Uri.parse('${_baseUrl}review'),
       headers: <String, String>{

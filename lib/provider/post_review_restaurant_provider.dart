@@ -6,16 +6,9 @@ enum ResultState { loading, noData, hasData, error }
 
 class PostReviewRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
-  String id;
-  String name;
-  String review;
+  final String id;
 
-  PostReviewRestaurantProvider({required this.apiService,
-    this.id = '',
-    this.name = '',
-    this.review = ''}) {
-    _postReviewRestaurant(id, name, review);
-  }
+  PostReviewRestaurantProvider({required this.apiService, required this.id});
 
   late ReviewRestaurant _reviewRestaurant;
   late ResultState _state;
@@ -27,21 +20,15 @@ class PostReviewRestaurantProvider extends ChangeNotifier {
 
   ResultState get state => _state;
 
-  Future<dynamic> _postReviewRestaurant(String id, String name,
-      String review) async {
+  Future<dynamic> postReviewRestaurant(String name, String review) async {
     try {
       _state = ResultState.loading;
       notifyListeners();
-      final restaurant = await apiService.reviewRestaurant(id, name, review);
-      if (restaurant.customerReviews.isEmpty) {
-        _state = ResultState.noData;
-        notifyListeners();
-        return _message = 'Empty Data';
-      } else {
-        _state = ResultState.hasData;
-        notifyListeners();
-        return _reviewRestaurant = restaurant;
-      }
+      final reviewRestaurant =
+          await apiService.postReviewRestaurant(id, name, review);
+      _state = ResultState.hasData;
+      notifyListeners();
+      return _reviewRestaurant = reviewRestaurant;
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();

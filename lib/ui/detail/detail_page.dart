@@ -4,6 +4,7 @@ import 'package:restaurant_app/data/api/api_service.dart';
 import 'package:restaurant_app/data/model/detail_restaurant.dart';
 import 'package:restaurant_app/provider/detail_restaurant_provider.dart';
 import 'package:restaurant_app/theme/styles.dart';
+import 'package:restaurant_app/ui/post_review/post_review_page.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/restaurant_detail';
@@ -17,13 +18,14 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  final _reviewController = TextEditingController();
-  final _nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    ApiService().detailRestaurant(widget.restaurantId);
+    Future.microtask(() {
+      Provider.of<DetailRestaurantProvider>(context, listen: false)
+          .fetchDetailRestaurant(widget.restaurantId);
+    });
   }
 
   @override
@@ -149,7 +151,17 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton(
-                              onPressed: () => _showAddReviewDialog(context),
+                              onPressed: () async {
+                                final result = await Navigator.pushNamed(
+                                  context,
+                                  PostReviewPage.routeName,
+                                  arguments: restaurant.id,
+                                );
+                                if (result != null && result == true) {
+                                  Provider.of<DetailRestaurantProvider>(context, listen: false)
+                                      .fetchDetailRestaurant(widget.restaurantId);
+                                }
+                              },
                               child: Text(
                                 'Add Review',
                                 style: TextStyle(color: onPrimaryColor),
@@ -255,61 +267,5 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ),
       ),
     );
-  }
-
-  void _showAddReviewDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Add Review', // size 20
-              style: Theme.of(context).textTheme.titleMedium),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(hintText: 'Your Name'),
-                ),
-                TextField(
-                  controller: _reviewController,
-                  decoration: InputDecoration(hintText: 'Your Review'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel', style: TextStyle(color: onPrimaryColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Submit', style: TextStyle(color: onPrimaryColor)),
-              onPressed: () {
-                _submitReview();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _submitReview() async {
-    await ApiService().reviewRestaurant(
-      widget.restaurantId,
-      _nameController.text,
-      _reviewController.text,
-    );
-    _refreshRestaurant();
-  }
-
-  void _refreshRestaurant() {
-    setState(() {
-      ApiService().detailRestaurant(widget.restaurantId);
-    });
   }
 }

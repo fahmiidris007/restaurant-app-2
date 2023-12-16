@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/provider/list_restaurant_provider.dart';
-import 'package:restaurant_app/provider/review_restaurant_provider.dart';
+import 'package:restaurant_app/provider/post_review_restaurant_provider.dart';
 import 'package:restaurant_app/provider/search_restaurant_provider.dart';
 import 'package:restaurant_app/theme/styles.dart';
 import 'package:restaurant_app/ui/detail/detail_page.dart';
 import 'package:restaurant_app/ui/home/list_page.dart';
+import 'package:restaurant_app/ui/post_review/post_review_page.dart';
 import 'package:restaurant_app/ui/search/search_page.dart';
 import 'package:restaurant_app/ui/splash/splash_screen.dart';
 
@@ -31,8 +32,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => SearchRestaurantProvider(apiService: ApiService())),
         ChangeNotifierProvider(
-            create: (_) =>
-                PostReviewRestaurantProvider(apiService: ApiService())),
+          create: (_) => DetailRestaurantProvider(apiService: ApiService()),
+        ),
       ],
       child: MaterialApp(
         title: 'Restaurant App',
@@ -53,6 +54,9 @@ class MyApp extends StatelessWidget {
                     ModalRoute.of(context)?.settings.arguments as String,
               ),
           SearchPage.routeName: (context) => const SearchPage(),
+          PostReviewPage.routeName: (context) => PostReviewPage(
+                id: ModalRoute.of(context)?.settings.arguments as String,
+              ),
         },
       ),
     );

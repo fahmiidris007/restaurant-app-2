@@ -8,8 +8,8 @@ class DetailRestaurantProvider extends ChangeNotifier {
   late final ApiService apiService;
   final String id;
 
-  DetailRestaurantProvider({required this.apiService, required this.id}){
-    _fetchDetailRestaurant(id);
+  DetailRestaurantProvider({required this.apiService, this.id= ''}){
+    fetchDetailRestaurant(id);
   }
 
   late DetailRestaurant _detailRestaurant;
@@ -22,7 +22,7 @@ class DetailRestaurantProvider extends ChangeNotifier {
 
   ResultState get state => _state;
 
-  Future<dynamic> _fetchDetailRestaurant(String id) async {
+  Future<dynamic> fetchDetailRestaurant(String id) async {
     try {
       _state = ResultState.loading;
       notifyListeners();
